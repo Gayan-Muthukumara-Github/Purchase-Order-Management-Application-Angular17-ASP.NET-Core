@@ -138,67 +138,10 @@ The application communicates with the following backend endpoints:
 - Breakpoint-based responsive design
 - Touch-friendly interface
 
-## Assumptions Made
 
-1. **Backend API**: Assumes the .NET Core backend is running and accessible
-2. **Data Format**: Assumes backend returns data in the expected format
-3. **Authentication**: No authentication/authorization implemented (can be added later)
-4. **Error Handling**: Basic error handling with user-friendly messages
-5. **Browser Support**: Modern browsers with ES6+ support
-6. **Network**: Assumes stable network connection for API calls
 
-## Development
 
-### Adding New Features
-1. Create new components in the `components/` directory
-2. Add routes in `app.routes.ts`
-3. Create services for new functionality
-4. Update models as needed
 
-### Styling
-- Component-specific styles in `.component.css` files
-- Global styles in `styles.css`
-- CSS custom properties for consistent theming
-- Utility classes for common styling needs
-
-### Testing
-```bash
-# Run unit tests
-npm test
-
-# Run tests with coverage
-npm run test:coverage
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Backend Connection Error**
-   - Verify backend is running on correct port
-   - Check CORS configuration
-   - Update `baseUrl` in service if needed
-
-2. **Build Errors**
-   - Clear `node_modules` and reinstall: `rm -rf node_modules && npm install`
-   - Update Angular CLI: `npm install -g @angular/cli@latest`
-
-3. **Runtime Errors**
-   - Check browser console for detailed error messages
-   - Verify all required environment variables are set
-
-## Contributing
-
-1. Follow Angular style guide
-2. Use TypeScript strict mode
-3. Implement proper error handling
-4. Add comprehensive tests
-5. Ensure responsive design
-6. Follow accessibility guidelines
-
-## License
-
-This project is licensed under the MIT License.
 
 ## Support
 
