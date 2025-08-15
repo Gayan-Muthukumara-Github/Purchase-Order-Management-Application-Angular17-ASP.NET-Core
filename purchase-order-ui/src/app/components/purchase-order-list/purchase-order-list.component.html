@@ -1,0 +1,192 @@
+<div class="container">
+  <div class="header">
+    <h1>Purchase Orders</h1>
+    <button class="btn btn-primary" (click)="addNewPurchaseOrder()">
+      <i class="fas fa-plus"></i> New Purchase Order
+    </button>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <form [formGroup]="filtersForm" class="filters-form">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="supplier">Supplier:</label>
+          <input 
+            type="text" 
+            id="supplier" 
+            formControlName="supplier" 
+            placeholder="Filter by supplier name"
+            class="form-control">
+        </div>
+
+        <div class="filter-group">
+          <label for="status">Status:</label>
+          <select id="status" formControlName="status" class="form-control">
+            <option value="">All Statuses</option>
+            <option *ngFor="let status of getStatusOptions()" [value]="status.value">
+              {{ status.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="dateFrom">Date From:</label>
+          <input 
+            type="date" 
+            id="dateFrom" 
+            formControlName="dateFrom" 
+            class="form-control">
+        </div>
+
+        <div class="filter-group">
+          <label for="dateTo">Date To:</label>
+          <input 
+            type="date" 
+            id="dateTo" 
+            formControlName="dateTo" 
+            class="form-control">
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" class="btn btn-secondary" (click)="clearFilters()">
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading purchase orders...</p>
+  </div>
+
+  <!-- Purchase Orders Table -->
+  <div *ngIf="!loading" class="table-container">
+    <table class="purchase-orders-table">
+      <thead>
+        <tr>
+          <th (click)="onSort('poNumber')" class="sortable">
+            PO Number
+            <span class="sort-icon" *ngIf="sortBy === 'poNumber'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="onSort('description')" class="sortable">
+            Description
+            <span class="sort-icon" *ngIf="sortBy === 'description'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="onSort('supplierName')" class="sortable">
+            Supplier
+            <span class="sort-icon" *ngIf="sortBy === 'supplierName'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="onSort('orderDate')" class="sortable">
+            Order Date
+            <span class="sort-icon" *ngIf="sortBy === 'orderDate'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="onSort('totalAmount')" class="sortable">
+            Total Amount
+            <span class="sort-icon" *ngIf="sortBy === 'totalAmount'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="onSort('status')" class="sortable">
+            Status
+            <span class="sort-icon" *ngIf="sortBy === 'status'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let po of purchaseOrders" class="table-row">
+          <td>{{ po.poNumber }}</td>
+          <td>{{ po.description || '-' }}</td>
+          <td>{{ po.supplierName }}</td>
+          <td>{{ po.orderDate | date:'shortDate' }}</td>
+          <td class="amount">${{ po.totalAmount.toFixed(2) }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(po.status)">
+              {{ getStatusDisplayName(po.status) }}
+            </span>
+          </td>
+          <td class="actions">
+            <button class="btn btn-sm btn-info" (click)="viewPurchaseOrder(po.id)" title="View">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-warning" (click)="editPurchaseOrder(po.id)" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="deletePurchaseOrder(po.id)" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- No Results Message -->
+    <div *ngIf="purchaseOrders.length === 0" class="no-results">
+      <p>No purchase orders found matching your criteria.</p>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && totalCount > 0" class="pagination">
+    <div class="pagination-info">
+      Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalCount) }} of {{ totalCount }} results
+    </div>
+    
+    <div class="pagination-controls">
+      <button 
+        class="btn btn-secondary" 
+        [disabled]="currentPage === 1"
+        (click)="currentPage = 1; loadPurchaseOrders()">
+        First
+      </button>
+      
+      <button 
+        class="btn btn-secondary" 
+        [disabled]="currentPage === 1"
+        (click)="currentPage = currentPage - 1; loadPurchaseOrders()">
+        Previous
+      </button>
+      
+      <span class="page-info">Page {{ currentPage }} of {{ Math.ceil(totalCount / pageSize) }}</span>
+      
+      <button 
+        class="btn btn-secondary" 
+        [disabled]="currentPage >= Math.ceil(totalCount / pageSize)"
+        (click)="currentPage = currentPage + 1; loadPurchaseOrders()">
+        Next
+      </button>
+      
+      <button 
+        class="btn btn-secondary" 
+        [disabled]="currentPage >= Math.ceil(totalCount / pageSize)"
+        (click)="currentPage = Math.ceil(totalCount / pageSize); loadPurchaseOrders()">
+        Last
+      </button>
+    </div>
+
+    <div class="page-size-controls">
+      <label for="pageSize">Items per page:</label>
+              <select 
+          id="pageSize" 
+          [value]="pageSize" 
+          (change)="onPageSizeChange($event)"
+          class="form-control">
+          <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+        </select>
+    </div>
+  </div>
+</div>

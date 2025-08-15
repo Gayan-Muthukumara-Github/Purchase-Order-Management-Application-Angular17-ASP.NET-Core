@@ -1,0 +1,132 @@
+<div class="container">
+  <div class="header">
+    <h1>Purchase Order Details</h1>
+    <div class="header-actions">
+      <button class="btn btn-warning" (click)="editPurchaseOrder()" *ngIf="purchaseOrder">
+        <i class="fas fa-edit"></i> Edit
+      </button>
+      <button class="btn btn-secondary" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Back to List
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading purchase order details...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error && !loading" class="error-message">
+    <div class="error-icon">⚠️</div>
+    <h3>Error Loading Purchase Order</h3>
+    <p>Unable to load the purchase order details. Please try again or contact support.</p>
+    <button class="btn btn-primary" (click)="goBack()">Go Back to List</button>
+  </div>
+
+  <!-- Purchase Order Details -->
+  <div *ngIf="!loading && !error && purchaseOrder" class="detail-container">
+    <div class="detail-card">
+      <div class="detail-header">
+        <div class="po-number">
+          <h2>{{ purchaseOrder.poNumber }}</h2>
+          <span class="status-badge" [ngClass]="getStatusClass(purchaseOrder.status)">
+            {{ getStatusDisplayName(purchaseOrder.status) }}
+          </span>
+        </div>
+        <div class="po-id">
+          ID: {{ purchaseOrder.id }}
+        </div>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-section">
+          <h3>Basic Information</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>PO Number</label>
+              <span>{{ purchaseOrder.poNumber }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Supplier</label>
+              <span>{{ purchaseOrder.supplierName }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Order Date</label>
+              <span>{{ formatDate(purchaseOrder.orderDate) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Total Amount</label>
+              <span class="amount">${{ formatAmount(purchaseOrder.totalAmount) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Status</label>
+              <span class="status-badge" [ngClass]="getStatusClass(purchaseOrder.status)">
+                {{ getStatusDisplayName(purchaseOrder.status) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section" *ngIf="purchaseOrder.description">
+          <h3>Description</h3>
+          <div class="description-content">
+            <p>{{ purchaseOrder.description }}</p>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Timeline</h3>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <div class="timeline-date">{{ formatDate(purchaseOrder.orderDate) }}</div>
+                <div class="timeline-title">Purchase Order Created</div>
+                <div class="timeline-description">Order placed with {{ purchaseOrder.supplierName }}</div>
+              </div>
+            </div>
+            <div class="timeline-item" *ngIf="purchaseOrder.status >= 1">
+              <div class="timeline-marker approved"></div>
+              <div class="timeline-content">
+                <div class="timeline-title">Order Approved</div>
+                <div class="timeline-description">Purchase order has been approved</div>
+              </div>
+            </div>
+            <div class="timeline-item" *ngIf="purchaseOrder.status >= 2">
+              <div class="timeline-marker shipped"></div>
+              <div class="timeline-content">
+                <div class="timeline-title">Order Shipped</div>
+                <div class="timeline-description">Items have been shipped by supplier</div>
+              </div>
+            </div>
+            <div class="timeline-item" *ngIf="purchaseOrder.status >= 3">
+              <div class="timeline-marker completed"></div>
+              <div class="timeline-content">
+                <div class="timeline-title">Order Completed</div>
+                <div class="timeline-description">Items received and order completed</div>
+              </div>
+            </div>
+            <div class="timeline-item" *ngIf="purchaseOrder.status === 4">
+              <div class="timeline-marker cancelled"></div>
+              <div class="timeline-content">
+                <div class="timeline-title">Order Cancelled</div>
+                <div class="timeline-description">Purchase order has been cancelled</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="btn btn-warning" (click)="editPurchaseOrder()">
+          <i class="fas fa-edit"></i> Edit Purchase Order
+        </button>
+        <button class="btn btn-secondary" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
